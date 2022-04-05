@@ -1,7 +1,7 @@
 module.exports = {
-  roots: ['<rootDir>/src'],
+  roots: ['.'],
   testEnvironment: 'node',
-  testMatch: ['**/?(*.)+(spec|test).[tj]s?(x)'],
+  testRegex: '.e2e-spec.ts$',
   coverageDirectory: 'coverage',
   collectCoverageFrom: [
     '<rootDir>/src/modules/**/*.ts',
