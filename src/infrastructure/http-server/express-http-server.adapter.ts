@@ -20,12 +20,12 @@ export const httpServer = (application: Application, routerPattern = '**/*http-r
       routeFn.default(app, application)
     }
   }
-  app.get('/healt-check', (req, res) => res.sendStatus(200))
+  app.get('/health-check', (req, res) => res.sendStatus(200))
 
   app.post('/reset', (req, res) => {
     res.status(200).send('OK')
 
-    setTimeout(() => process.exit(1), 100)
+    // process.exit(1)
   })
 
   return app

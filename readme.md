@@ -1,5 +1,5 @@
 
-# Simplest banking
+# Simplest banking (🚧 WIP)
 
 Simple~~st~~ banking service I could think of using some good practices. 
 
@@ -12,6 +12,9 @@ git clone git@github.com
 cd simplest-banking
 yarn
 ```
+
+## Roadmap
+This application is still under development, some details are still missing
 
 ## API Reference
 
