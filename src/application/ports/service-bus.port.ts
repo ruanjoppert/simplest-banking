@@ -1,5 +1,5 @@
-import { EventEmitter } from 'stream'
+export interface ServiceBus {
+  listen(eventName: string | string[], callback: (event: any) => any): void
 
-export interface ServiceBus extends EventEmitter {
   publish(...events: object[]): void
 }

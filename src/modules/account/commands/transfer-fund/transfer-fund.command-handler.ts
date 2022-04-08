@@ -1,4 +1,3 @@
-import { IntegrationEvent } from '../../../../application/events/integration-event'
 import { Logger } from '../../../../application/ports/logger.port'
 import { ServiceBus } from '../../../../application/ports/service-bus.port'
 import { AccountRepositoryInterface } from '../../database/repositories/account.repository.interface'
@@ -17,50 +16,39 @@ export class TransferFundCommandHandler {
     this.logger = logger
   }
 
-  public async handle (command: IntegrationEvent<'TransferFundCommand', TransferFundCommand>) {
-    const { from, to, amount } = command.data
+  public async handle (command: TransferFundCommand) {
+    const { from, to, amount } = command
 
     if (typeof amount !== 'number' || amount <= 0) {
       throw new Error('Amount must be greather then 0')
     }
 
-    const originAccount = await this.accountRepo.findOne(from)
+    const origin = await this.accountRepo.findOne(from)
 
-    if (!originAccount) {
-      this.eventBus.emit('TransferAccountNotFounded',
-        new IntegrationEvent('TransferAccountNotFounded', { from, to, amount }, command.id)
-      )
+    if (!origin) {
+      // this.eventBus.emit('TransferAccountNotFounded',
+      //   new IntegrationEvent('TransferAccountNotFounded', { from, to, amount }, command.id)
+      // )
 
-      return
+      return null
     }
 
-    const destinationAccount = await this.accountRepo.findOne(to) || Account.open(to)
-    const transfer = AccountServiceDomain.transfer(originAccount, destinationAccount, amount)
+    const destination = await this.accountRepo.findOne(to) || Account.open(to)
+    const transfer = AccountServiceDomain.transfer(origin, destination, amount)
 
     if (transfer === null) {
-      this.eventBus.emit('TransferAccountNotEnoughFunds',
-        new IntegrationEvent('TransferAccountNotEnoughFunds', { from, to, amount }, command.id)
-      )
+      // this.eventBus.emit('TransferAccountNotEnoughFunds',
+      //   new IntegrationEvent('TransferAccountNotEnoughFunds', { from, to, amount }, command.id)
+      // )
 
-      return
+      return null
     }
 
-    await this.accountRepo.save(originAccount)
-    await this.accountRepo.save(destinationAccount)
+    await this.accountRepo.save(origin)
+    await this.accountRepo.save(destination)
 
-    this.eventBus.emit('AccountBalanceUpdated',
-      new IntegrationEvent('AccountBalanceUpdated', { accountId: originAccount.accountId, balance: originAccount.balance }, command.id)
-    )
+    this.logger.info(`Transfer "${amount}" into account "${destination.accountId}", from ${origin.accountId}`, { command })
 
-    this.eventBus.emit('AccountBalanceUpdated',
-      new IntegrationEvent('AccountBalanceUpdated', { accountId: destinationAccount.accountId, balance: destinationAccount.balance }, command.id)
-    )
-
-    this.eventBus.emit('TransferFundMade',
-      new IntegrationEvent('TransferFundMade', {
-        origin: { accountId: originAccount.accountId, balance: originAccount.balance },
-        destination: { accountId: destinationAccount.accountId, balance: destinationAccount.balance }
-      }, command.id)
-    )
+    return { origin, destination }
   }
 }

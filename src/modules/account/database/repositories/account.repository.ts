@@ -1,15 +1,15 @@
 import { AccountRepositoryInterface } from './account.repository.interface'
 import { Account } from '../../domain/entities/account.entity'
-import { AccountIntegrationEvents } from '../../account.events'
+import { AccountEvents } from '../../account.events'
 import { AccountMapper } from '../mapper/account.mapper'
 import { ServiceBus } from '../../../../application/ports/service-bus.port'
 import { EventStore } from '../../../../application/ports/event-store.port'
 
 export class AccountRepository implements AccountRepositoryInterface {
-  private adapter: EventStore<AccountIntegrationEvents>
+  private adapter: EventStore<AccountEvents>
   private eventBus: ServiceBus | undefined
 
-  public constructor (adapter: EventStore<AccountIntegrationEvents>, eventBus?: ServiceBus) {
+  public constructor (adapter: EventStore<AccountEvents>, eventBus?: ServiceBus) {
     this.adapter = adapter
     this.eventBus = eventBus
   }
@@ -23,7 +23,8 @@ export class AccountRepository implements AccountRepositoryInterface {
 
     const events = AccountMapper.toPersistence(account)
 
-    this.adapter.appendToStream(account.accountId, events as AccountIntegrationEvents[])
+    this.adapter.appendToStream(account.accountId, events as AccountEvents[])
+
     this.eventBus?.publish(...account.events)
 
     account.clearEvents()

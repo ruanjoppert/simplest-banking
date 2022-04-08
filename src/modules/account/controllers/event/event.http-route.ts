@@ -2,9 +2,10 @@ import { EventHttpController, EventHttpRequestDTO } from '.'
 import { Application } from '../../../../application/application'
 
 export default (router: any, app: Application): void => {
-  const { commandBus, eventBus, logger } = app
+  const { eventBus, logger } = app
 
-  const eventHttpController = new EventHttpController(commandBus, eventBus, logger)
+  const interactorCall = app.call.bind(app)
+  const eventHttpController = new EventHttpController(interactorCall, eventBus, logger)
 
   router.post('/event', (request: any, response: any) => {
     const { type, amount, destination, origin } = request.body
@@ -18,6 +19,7 @@ export default (router: any, app: Application): void => {
       })
 
       logger.debug('Requested made into "POST /event"', { body: request.body })
+
       eventHttpController.handle(eventHttpRequestDTO, response)
     } catch (error: any) {
       response.status(400).json({

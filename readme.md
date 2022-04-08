@@ -171,3 +171,23 @@ To run tests, run the following command
 ```bash
 yarn test
 ```
+
+
+modules/account
+  domain
+    entities
+    events
+    exceptions
+
+  application
+    commands
+    queries
+    exceptions
+    event-handlers
+
+  infrastructure
+    database
+
+  
+
+

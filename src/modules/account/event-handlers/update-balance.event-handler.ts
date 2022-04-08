@@ -10,9 +10,27 @@ export class UpdateBalanceEventHandler {
     this.logger = logger
   }
 
-  public handle (event) {
-    const { accountId, balance } = event.data
+  public async handle (event) {
+    const { accountId, amount } = event.data
 
-    this.model.save({ _id: accountId, balance })
+    if (event.type === 'AccountOpenedDomainEvent') {
+      const { accountId } = event.data
+
+      this.model.save({ _id: accountId, balance: 0 })
+
+      return
+    }
+
+    const account = await this.model.findOne(accountId)
+
+    if (event.type === 'DepositMadeDomainEvent') {
+      account.balance += amount
+    }
+
+    if (event.type === 'WithdrawMadeDomainEvent') {
+      account.balance -= amount
+    }
+
+    this.model.save(account)
   }
 }

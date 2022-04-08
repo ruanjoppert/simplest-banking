@@ -1,13 +1,15 @@
 import { Logger } from '../../../../application/ports/logger.port'
-import { Model } from '../../../../application/ports/model.port'
+import { GetBalanceQuery } from '../../queries/balance/get-balance.query'
 import { GetBalanceHttpRequestDTO } from './get-balance.http-request.dto'
 
 export class GetBalanceHttpController {
-  private logger: Logger
-  private accountQueryModel: Model
+  private call: <T>(interactorName: string, dto: unknown) => T
 
-  constructor (accountQueryModel: Model, logger: Logger) {
-    this.accountQueryModel = accountQueryModel
+  private logger: Logger
+
+  constructor (call: any, logger: Logger) {
+    this.call = call
+
     this.logger = logger
 
     this.logger.debug('Controller loaded "GetBalanceHttpController"')
@@ -16,14 +18,15 @@ export class GetBalanceHttpController {
   public async handle (request: GetBalanceHttpRequestDTO, response: any) {
     const { accountId } = request
 
-    const account = await this.accountQueryModel.findOne(accountId)
+    const query = new GetBalanceQuery({ accountId })
+    const balance = await this.call<Promise<any>>('GetBalanceQueryHandler', query)
 
-    if (!account) {
+    if (!balance) {
       response.status(404).send('0')
 
       return
     }
 
-    response.status(200).send(String(account.balance))
+    response.status(200).send(String(balance.balance))
   }
 }

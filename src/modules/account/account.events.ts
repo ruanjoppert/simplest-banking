@@ -1,10 +1,10 @@
-import { IntegrationEvent } from '../../application/events/integration-event'
+import { Event } from '../../infrastructure/event/event.adapter'
 import { AccountOpenedDomainEvent, DepositMadeDomainEvent, WithdrawMadeDomainEvent } from './domain/events'
 
-export type AccountIntegrationEvents =
-  IntegrationEvent<'AccountOpenedDomainEvent', AccountOpenedDomainEvent>
-  | IntegrationEvent<'DepositMadeDomainEvent', DepositMadeDomainEvent>
-  | IntegrationEvent<'WithdrawMadeDomainEvent', WithdrawMadeDomainEvent>
+export type AccountEvents =
+  Event<AccountOpenedDomainEvent>
+  | Event<DepositMadeDomainEvent>
+  | Event<WithdrawMadeDomainEvent>
 
 export type AccountDomainEvents =
   AccountOpenedDomainEvent

@@ -1,9 +1,8 @@
-import { IntegrationEvent } from '../../../../application/events/integration-event'
-import { AccountIntegrationEvents } from '../../account.events'
+import { Event } from '../../../../infrastructure/event/event.adapter'
 import { Account } from '../../domain/entities/account.entity'
 
 export class AccountMapper {
-  public static toDomain (events: AccountIntegrationEvents[]) {
+  public static toDomain (events: any[]) {
     const state = events.reduce((account, event) => {
       if (event.type === 'AccountOpenedDomainEvent') {
         account.accountId = event.data.accountId
@@ -24,6 +23,6 @@ export class AccountMapper {
   }
 
   public static toPersistence (account: Account) {
-    return account.events.map(ev => new IntegrationEvent(ev.constructor.name, ev))
+    return account.events.map(ev => new Event(ev))
   }
 }

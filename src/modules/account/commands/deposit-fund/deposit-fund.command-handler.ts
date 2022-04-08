@@ -1,4 +1,3 @@
-import { IntegrationEvent } from '../../../../application/events/integration-event'
 import { Logger } from '../../../../application/ports/logger.port'
 import { ServiceBus } from '../../../../application/ports/service-bus.port'
 import { AccountRepositoryInterface } from '../../database/repositories/account.repository.interface'
@@ -16,8 +15,8 @@ export class DepositFundCommandHandler {
     this.logger = logger
   }
 
-  public async handle (command: IntegrationEvent<'DepositFundCommand', DepositFundCommand>): Promise<void> {
-    const { accountId, amount } = command.data
+  public async handle (command: DepositFundCommand): Promise<Account> {
+    const { accountId, amount } = command
 
     if (typeof amount !== 'number' || amount <= 0) {
       throw new Error('Amount must be greather then 0')
@@ -28,10 +27,8 @@ export class DepositFundCommandHandler {
     account.deposit(amount)
     await this.accountRepo.save(account)
 
-    this.eventBus.emit('AccountBalanceUpdated',
-      new IntegrationEvent('AccountBalanceUpdated', { accountId: account.accountId, balance: account.balance }, command.id)
-    )
-
     this.logger.info(`Depoist "${amount}" into account "${account.accountId}", current balance: ${account.balance}`, { command })
+
+    return account
   }
 }

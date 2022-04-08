@@ -3,7 +3,6 @@ import { AccountRepository } from '../../database/repositories/account.repositor
 import { DepositFundCommand } from './deposit-fund.command'
 import { DepositFundCommandHandler } from './deposit-fund.command-handler'
 import { InMemoryServiceBus } from '../../../../infrastructure/service-bus/in-memory-service-bus.adapter'
-import { IntegrationEvent } from '../../../../application/events/integration-event'
 
 describe('Deposit Fund', () => {
   let accountRepository: AccountRepository
@@ -23,10 +22,9 @@ describe('Deposit Fund', () => {
 
   test('When requested with valid command, should commit', async () => {
     const command = new DepositFundCommand({ accountId: '100', amount: 10 })
-    const handler = await commandHandler.handle(new IntegrationEvent('DepositFundCommand', command))
-    const account = await accountRepository.findOne('100')
+    const account = await commandHandler.handle(command)
 
-    expect(handler).toBeUndefined()
-    expect(account?.balance).toBe(10)
+    expect(account.balance).toBe(10)
+    expect(account.accountId).toBe('100')
   })
 })

@@ -3,9 +3,10 @@ import { GetBalanceHttpController } from './get-balance.http-controller'
 import { GetBalanceHttpRequestDTO } from './get-balance.http-request.dto'
 
 export default (router: any, app: Application): void => {
-  const { logger, accountQueryModel } = app
+  const { logger } = app
 
-  const getBalanceHttpController = new GetBalanceHttpController(accountQueryModel, logger)
+  const interactorCall = app.call.bind(app)
+  const getBalanceHttpController = new GetBalanceHttpController(interactorCall, logger)
 
   router.get('/balance', (request: any, response: any) => {
     const { account_id: accountId } = request.query

@@ -6,8 +6,6 @@ import { Application } from '../../application/application'
 export const httpServer = (application: Application, routerPattern = '**/*http-route.[tj]s') => {
   const app = express()
 
-  console.log('---', routerPattern)
-
   app.use(express.json())
   app.use(express.urlencoded({ extended: true }))
 
@@ -22,6 +20,7 @@ export const httpServer = (application: Application, routerPattern = '**/*http-r
       routeFn.default(app, application)
     }
   }
+
   app.get('/health-check', (req, res) => res.sendStatus(200))
 
   app.post('/reset', (req, res) => {
