@@ -7,6 +7,8 @@ Simple~~st~~ banking service I could think of using some good practices.
 1. Clone this project
 2. Install dependencies using `yarn` or `npm install`
 
+![image](https://user-images.githubusercontent.com/3036097/204598136-93acb7f5-63ea-434d-a604-b6957318aac9.png)
+
 ```bash
 git clone git@github.com
 cd simplest-banking
